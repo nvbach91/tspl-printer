@@ -119,12 +119,12 @@ if (argv.usage) {
 try {
     print({
         filePath: argv.filePath,
-        quantity: argv.quantity ? argv.quantity.toString() : '1',
-        copy: argv.copy ? argv.copy.toString() : '1',
+        quantity: typeof argv.quantity === 'number' ? Math.round(argv.quantity).toString() : '1',
+        copy: typeof argv.copy === 'number' ? Math.round(argv.copy).toString() : '1',
         fontFamily: argv.fontFamily || 'Consolas',
-        fontSize: argv.fontSize || 32,
-        x: argv.left || 150,
-        top: argv.top || 30,
+        fontSize: typeof argv.fontSize === 'number' ? Math.round(argv.fontSize) : 32,
+        x: typeof argv.left === 'number' ? Math.round(argv.left) : 150,
+        top: typeof argv.top === 'number' ? Math.round(argv.top) : 30,
     });
     console.log('Printed successfully');
     return 0;
