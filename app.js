@@ -92,8 +92,7 @@ const print = ({ filePath, quantity, copy, fontFamily, fontSize, x, top }) => {
     printlabel(label_variable, true);
     closeport('', true);
 };
-
-if (argv.usage) {
+const printUsage = () => {
     console.log('+------------------------------------+');
     console.log('|       WELCOME TO TSPL-Printer      |');
     console.log('+------------------------------------+');
@@ -110,14 +109,18 @@ if (argv.usage) {
     console.log('             [--fontSize=32]      ');
     console.log('             [--left=150]         ');
     console.log('             [--top=30]           ');
+};
+
+if (argv.usage) {
+    printUsage();
     return 0;
 }
 
 try {
     print({
         filePath: argv.filePath,
-        quantity: argv.quantity.toString() || '1',
-        copy: argv.copy.toString() || '1',
+        quantity: argv.quantity ? argv.quantity.toString() : '1',
+        copy: argv.copy ? argv.copy.toString() : '1',
         fontFamily: argv.fontFamily || 'Consolas',
         fontSize: argv.fontSize || 32,
         x: argv.left || 150,
@@ -127,5 +130,6 @@ try {
     return 0;
 } catch (err) {
     console.error(err);
+    printUsage();
     return 1;
 }
