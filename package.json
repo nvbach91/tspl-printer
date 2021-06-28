@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "edge-js": "^15.5.2",
+    "yargs": "^17.0.1"
+  },
+  "name": "node",
+  "bin": "app.js",
+  "pkg": {
+    "assets": "tcslibnet.dll",
+    "targets": [
+      "node14-win-x64"
+    ],
+    "outputPath": "dist"
+  }
+}
