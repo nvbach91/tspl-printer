@@ -62,7 +62,7 @@ try {
     console.log(error);
 }
 
-const print = ({ filePath, quantity, copy, fontFamily, fontSize, x, top }) => {
+const print = ({ filePath, quantity, copy, fontFamily, fontSize, x, top, printerName }) => {
     let fileContent;
     try {
         fileContent = fs.readFileSync(filePath, 'utf-8');
@@ -79,7 +79,8 @@ const print = ({ filePath, quantity, copy, fontFamily, fontSize, x, top }) => {
         szFaceName: fontFamily,
     };
     const label_variable = { quantity, copy };
-    openport('');
+    console.log(printerName);
+    openport(printerName || '');
     clearbuffer('', true);
     let y = fontSize - 2;
     lines.forEach((line, i) => {
@@ -90,7 +91,7 @@ const print = ({ filePath, quantity, copy, fontFamily, fontSize, x, top }) => {
         }, true);
     });
     printlabel(label_variable, true);
-    closeport('', true);
+    closeport(printerName || '', true);
 };
 const printUsage = () => {
     console.log('+------------------------------------+');
@@ -109,6 +110,7 @@ const printUsage = () => {
     console.log('             [--fontSize=32]      ');
     console.log('             [--left=150]         ');
     console.log('             [--top=30]           ');
+    console.log('             [--printerName=TSC]  ');
 };
 
 if (argv.usage) {
@@ -125,6 +127,7 @@ try {
         fontSize: typeof argv.fontSize === 'number' ? Math.round(argv.fontSize) : 32,
         x: typeof argv.left === 'number' ? Math.round(argv.left) : 150,
         top: typeof argv.top === 'number' ? Math.round(argv.top) : 30,
+        printerName: argv.printerName,
     });
     console.log('Printed successfully');
     return 0;
