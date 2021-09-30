@@ -11,7 +11,39 @@ let clearbuffer;
 let printlabel;
 let closeport;
 let windowsfont;
+let about;
+let printer_status;
+let sendcommand_binary;
 
+try {
+    sendcommand_binary = edge.func({
+        assemblyFile: 'tsclibnet.dll',
+        typeName: 'TSCSDK.node_usb',
+        methodName: 'sendcommand_binary'
+    });
+}
+catch (error) {
+    console.log(error);
+}
+try {
+    about = edge.func({
+        assemblyFile: 'tsclibnet.dll',
+        typeName: 'TSCSDK.node_usb',
+        methodName: 'about'
+    });
+} catch (e) {
+    console.log(error);
+}
+
+try {
+    printer_status = edge.func({
+        assemblyFile: 'tsclibnet.dll',
+        typeName: 'TSCSDK.node_usb',
+        methodName: 'printerstatus_string'
+    });
+} catch (e) {
+    console.log(error);
+}
 try {
     openport = edge.func({
         assemblyFile: 'tsclibnet.dll',
@@ -79,7 +111,7 @@ const print = ({ filePath, quantity, copy, fontFamily, fontSize, x, top, printer
         szFaceName: fontFamily,
     };
     const label_variable = { quantity, copy };
-    console.log(printerName);
+    // console.log(printerName);
     openport(printerName || '');
     clearbuffer('', true);
     let y = fontSize - 2;
@@ -112,6 +144,20 @@ const printUsage = () => {
     console.log('             [--top=30]           ');
     console.log('             [--printerName=TSC]  ');
 };
+
+if (argv.test) {
+    print({
+        filePath: 'test.txt',
+        quantity: typeof argv.quantity === 'number' ? Math.round(argv.quantity).toString() : '1',
+        copy: typeof argv.copy === 'number' ? Math.round(argv.copy).toString() : '1',
+        fontFamily: argv.fontFamily || 'Consolas',
+        fontSize: typeof argv.fontSize === 'number' ? Math.round(argv.fontSize) : 32,
+        x: typeof argv.left === 'number' ? Math.round(argv.left) : 150,
+        top: typeof argv.top === 'number' ? Math.round(argv.top) : 30,
+        printerName: 'TSC',
+    });
+    return 0;
+}
 
 if (argv.usage) {
     printUsage();

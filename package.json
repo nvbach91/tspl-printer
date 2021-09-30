@@ -7,7 +7,7 @@
   "bin": "app.js",
   "pkg": {
     "targets": [
-      "node14"
+      "node12"
     ],
     "outputPath": "dist"
   }
