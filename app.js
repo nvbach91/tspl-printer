@@ -94,6 +94,10 @@ try {
     console.log(error);
 }
 
+// const TEXT = (text) => {
+//     return Buffer.from(`${text}\0`, 'ucs2');
+// };
+
 const print = ({ filePath, quantity, copy, fontFamily, fontSize, x, top, printerName }) => {
     let fileContent;
     try {
@@ -112,7 +116,8 @@ const print = ({ filePath, quantity, copy, fontFamily, fontSize, x, top, printer
     };
     const label_variable = { quantity, copy };
     // console.log(printerName);
-    openport(printerName || '');
+    // console.log(TEXT(printerName));
+    openport(printerName || '', true);
     clearbuffer('', true);
     let y = fontSize - 2;
     lines.forEach((line, i) => {
@@ -182,3 +187,29 @@ try {
     printUsage();
     return 1;
 }
+
+
+
+/*
+// PYTHON 
+import ctypes
+
+tsclibrary = ctypes.WinDLL(".//libs//TSCLIB.dll");
+
+if __name__ == '__main__':
+    pass
+a_str = "HELLO WORLD";
+print(a_str);
+
+
+printerName = "TSC DA210";
+
+tsclibrary.openport(printerName);
+tsclibrary.clearbuffer();
+tsclibrary.windowsfont("400","400","24","0", "0", "0", "Arial","Window Font Test");
+tsclibrary.printlabel("1", "1");
+tsclibrary.closeport();
+*/
+
+
+
