@@ -2,9 +2,11 @@
 
 const edge = require('edge-js');
 const fs = require('fs');
-const yargs = require('yargs/yargs')
-const { hideBin } = require('yargs/helpers')
-const argv = yargs(hideBin(process.argv)).argv
+const yargs = require('yargs/yargs');
+const { hideBin } = require('yargs/helpers');
+const argv = yargs(hideBin(process.argv)).argv;
+const libFile = 'tsclibnet.dll';
+
 
 let openport;
 let clearbuffer;
@@ -17,7 +19,7 @@ let sendcommand_binary;
 
 try {
     sendcommand_binary = edge.func({
-        assemblyFile: 'tsclibnet.dll',
+        assemblyFile: libFile,
         typeName: 'TSCSDK.node_usb',
         methodName: 'sendcommand_binary'
     });
@@ -27,7 +29,7 @@ catch (error) {
 }
 try {
     about = edge.func({
-        assemblyFile: 'tsclibnet.dll',
+        assemblyFile: libFile,
         typeName: 'TSCSDK.node_usb',
         methodName: 'about'
     });
@@ -37,7 +39,7 @@ try {
 
 try {
     printer_status = edge.func({
-        assemblyFile: 'tsclibnet.dll',
+        assemblyFile: libFile,
         typeName: 'TSCSDK.node_usb',
         methodName: 'printerstatus_string'
     });
@@ -46,7 +48,7 @@ try {
 }
 try {
     openport = edge.func({
-        assemblyFile: 'tsclibnet.dll',
+        assemblyFile: libFile,
         typeName: 'TSCSDK.node_usb',
         methodName: 'openport'
     });
@@ -56,7 +58,7 @@ try {
 
 try {
     clearbuffer = edge.func({
-        assemblyFile: 'tsclibnet.dll',
+        assemblyFile: libFile,
         typeName: 'TSCSDK.node_usb',
         methodName: 'clearbuffer'
     });
@@ -66,7 +68,7 @@ try {
 
 try {
     printlabel = edge.func({
-        assemblyFile: 'tsclibnet.dll',
+        assemblyFile: libFile,
         typeName: 'TSCSDK.node_usb',
         methodName: 'printlabel'
     });
@@ -76,7 +78,7 @@ try {
 
 try {
     closeport = edge.func({
-        assemblyFile: 'tsclibnet.dll',
+        assemblyFile: libFile,
         typeName: 'TSCSDK.node_usb',
         methodName: 'closeport'
     });
@@ -86,7 +88,7 @@ try {
 
 try {
     windowsfont = edge.func({
-        assemblyFile: 'tsclibnet.dll',
+        assemblyFile: libFile,
         typeName: 'TSCSDK.node_usb',
         methodName: 'windowsfont'
     });
@@ -98,7 +100,7 @@ try {
 //     return Buffer.from(`${text}\0`, 'ucs2');
 // };
 
-const print = ({ filePath, quantity, copy, fontFamily, fontSize, x, top, printerName }) => {
+const print = ({ filePath, quantity, copy, fontFamily, fontSize, x, top, printer }) => {
     let fileContent;
     try {
         fileContent = fs.readFileSync(filePath, 'utf-8');
@@ -115,9 +117,11 @@ const print = ({ filePath, quantity, copy, fontFamily, fontSize, x, top, printer
         szFaceName: fontFamily,
     };
     const label_variable = { quantity, copy };
-    // console.log(printerName);
-    // console.log(TEXT(printerName));
-    openport(printerName || '', true);
+    // console.log(printer);
+    // console.log(label_variable);
+    // console.log(windowsfont_variable);
+    // console.log(TEXT(printer));
+    openport(printer || '', true);
     clearbuffer('', true);
     let y = fontSize - 2;
     lines.forEach((line, i) => {
@@ -128,7 +132,7 @@ const print = ({ filePath, quantity, copy, fontFamily, fontSize, x, top, printer
         }, true);
     });
     printlabel(label_variable, true);
-    closeport(printerName || '', true);
+    closeport(printer || '', true);
 };
 const printUsage = () => {
     console.log('+------------------------------------+');
@@ -140,14 +144,14 @@ const printUsage = () => {
     console.log('  You must have the Windows printer driver installed first');
     console.log('  see https://www.tscprinters.com/EN/support/support_download/DA210-DA220_Series');
     console.log('Usage:');
-    console.log('  $> node.exe --filePath=print.txt');
-    console.log('             [--quantity=1]       ');
-    console.log('             [--copy=1]           ');
-    console.log('             [--fontFamily=Arial] ');
-    console.log('             [--fontSize=32]      ');
-    console.log('             [--left=150]         ');
-    console.log('             [--top=30]           ');
-    console.log('             [--printerName=TSC]  ');
+    console.log('  $> node.exe --filePath="print.txt"   ');
+    console.log('             [--quantity=1]            ');
+    console.log('             [--copy=1]                ');
+    console.log('             [--fontFamily="Consolas"] ');
+    console.log('             [--fontSize=32]           ');
+    console.log('             [--left=150]              ');
+    console.log('             [--top=30]                ');
+    console.log('             [--printer="TSC"]         ');
 };
 
 if (argv.test) {
@@ -159,7 +163,7 @@ if (argv.test) {
         fontSize: typeof argv.fontSize === 'number' ? Math.round(argv.fontSize) : 32,
         x: typeof argv.left === 'number' ? Math.round(argv.left) : 150,
         top: typeof argv.top === 'number' ? Math.round(argv.top) : 30,
-        printerName: 'TSC',
+        printer: 'TSC',
     });
     return 0;
 }
@@ -175,10 +179,10 @@ try {
         quantity: typeof argv.quantity === 'number' ? Math.round(argv.quantity).toString() : '1',
         copy: typeof argv.copy === 'number' ? Math.round(argv.copy).toString() : '1',
         fontFamily: argv.fontFamily || 'Consolas',
-        fontSize: typeof argv.fontSize === 'number' ? Math.round(argv.fontSize) : 32,
+        fontSize: typeof argv.fontSize === 'number' ? Math.round(argv.fontSize) : 28,
         x: typeof argv.left === 'number' ? Math.round(argv.left) : 150,
         top: typeof argv.top === 'number' ? Math.round(argv.top) : 30,
-        printerName: argv.printerName,
+        printer: argv.printer,
     });
     console.log('Printed successfully');
     return 0;
@@ -187,29 +191,4 @@ try {
     printUsage();
     return 1;
 }
-
-
-
-/*
-// PYTHON 
-import ctypes
-
-tsclibrary = ctypes.WinDLL(".//libs//TSCLIB.dll");
-
-if __name__ == '__main__':
-    pass
-a_str = "HELLO WORLD";
-print(a_str);
-
-
-printerName = "TSC DA210";
-
-tsclibrary.openport(printerName);
-tsclibrary.clearbuffer();
-tsclibrary.windowsfont("400","400","24","0", "0", "0", "Arial","Window Font Test");
-tsclibrary.printlabel("1", "1");
-tsclibrary.closeport();
-*/
-
-
 
